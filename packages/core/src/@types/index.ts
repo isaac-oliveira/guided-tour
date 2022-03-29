@@ -37,10 +37,19 @@ export interface TooltipProps {
     close: () => void;
 }
 
+export interface WelcomeModalProps {
+    title: string;
+    text: string;
+    onPress: () => void;
+    closeWelcome: () => void;
+    close: () => void;
+}
+
 export interface IGuidedContext {
     backgroundColor?: string;
     insets?: Insets;
     renderTooltip?: (props: TooltipProps) => React.ReactElement<any>;
+    renderWelcome?: (props: WelcomeModalProps) => React.ReactElement<any>;
     current: string | null;
     setCurrent: (current: string | null) => void;
     close: () => void;
@@ -50,6 +59,7 @@ export type GuidedProviderProps = React.PropsWithChildren<{
     insets?: Insets;
     backgroundColor?: string;
     renderTooltip?: (props: TooltipProps) => React.ReactElement<any>;
+    renderWelcome?: (props: WelcomeModalProps) => React.ReactElement<any>;
 }>;
 
 export type GuidedOptions = {

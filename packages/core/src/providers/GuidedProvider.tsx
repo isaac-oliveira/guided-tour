@@ -7,13 +7,19 @@ const GuidedProvider = ({
     children,
     backgroundColor,
     insets,
-    renderTooltip
+    renderTooltip,
+    renderWelcome
 }: GuidedProviderProps) => {
     const [current, setCurrent] = useState<string | null>(null);
+    const [isStartGuide, setIsStartGuide] = useState<boolean>(false);
 
     const close = () => {
         setCurrent(null);
     };
+
+    const closeWelcome = () => {
+        setIsStartGuide(false);
+    }
 
     const value = useMemo(
         () => ({
@@ -22,9 +28,13 @@ const GuidedProvider = ({
             renderTooltip,
             current,
             setCurrent,
-            close
+            close,
+            renderWelcome,
+            isStartGuide,
+            setIsStartGuide,
+            closeWelcome
         }),
-        [current, backgroundColor, insets, renderTooltip, close]
+        [current, backgroundColor, insets, renderTooltip, renderWelcome, isStartGuide]
     );
 
     return (

@@ -22,7 +22,7 @@ const GuidedComponent = ({
     const ref = useRef<View>(null);
     const [modalVisibily, setModalVisibily] = useState<boolean>(false);
 
-    const { current, backgroundColor, insets, renderTooltip, ...rest } =
+    const { current, backgroundColor, insets, renderTooltip, closeWelcome, isStartGuide, renderWelcome, close, ...rest } =
         useGuided({
             previousName,
             nextName
@@ -116,7 +116,8 @@ const GuidedComponent = ({
                 statusBarTranslucent
                 onDismiss={() => setModalVisibily(false)}
                 transparent
-            >
+                >
+                { renderWelcome && isStartGuide ? renderWelcome({closeWelcome, close}) :
                 <View style={styles.container}>
                     <View
                         onLayout={onLayoutComponent}
@@ -128,14 +129,16 @@ const GuidedComponent = ({
                         onLayout={onLayoutTooltip}
                         style={styles.tooltipContainer}
                     >
-                        {renderTooltip &&
+                        {renderTooltip && !isStartGuide &&
                             renderTooltip({
                                 data: tooltipData,
                                 current,
+                                close,
                                 ...rest
                             })}
                     </View>
                 </View>
+                }
             </Modal>
         </>
     );

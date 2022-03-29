@@ -3,13 +3,13 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GuidedProvider, TooltipProps } from '@guided-tour/core';
+import { WelcomeModalProps, GuidedProvider, TooltipProps } from '@guided-tour/core';
 
 import HomeScreen from './src/pages/HomeScreen';
 import SimpleScreen from './src/pages/SimpleScreen';
 import FlatListScreen from './src/pages/FlatListScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Tooltip } from './src/components';
+import { Tooltip, WelcomeModal } from './src/components';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,11 +37,23 @@ function App() {
         );
     };
 
+    const renderWelcome = ({ closeWelcome, close }: WelcomeModalProps) => {
+        return (
+          <WelcomeModal
+            title='Bem-vindo (a)'
+            text='Insira aqui o texto a ser exibido no modal de inicializção do guided tour.....'
+            onPressClose={close}
+            onPress={closeWelcome}
+          />
+        )
+    }
+
     return (
         <GuidedProvider
             backgroundColor="#000000a1"
             insets={insets}
             renderTooltip={renderTooltip}
+            renderWelcome={renderWelcome}
         >
             <NavigationContainer>
                 <Stack.Navigator>
