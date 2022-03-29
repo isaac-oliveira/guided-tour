@@ -14,6 +14,10 @@ function HomeScreen() {
                 title="See FlatList Example"
                 onPress={() => navigation.navigate('FlatList')}
             />
+            <Button
+                title="See ScrollView Example"
+                onPress={() => navigation.navigate('ScrollView')}
+            />
         </View>
     );
 }
@@ -22,7 +26,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'space-evenly'
     }
 });
 

@@ -8,6 +8,7 @@ import { GuidedProvider, TooltipProps } from '@guided-tour/core';
 import HomeScreen from './src/pages/HomeScreen';
 import SimpleScreen from './src/pages/SimpleScreen';
 import FlatListScreen from './src/pages/FlatListScreen';
+import ScrollViewScreen from './src/pages/ScrollViewScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tooltip } from './src/components';
 
@@ -48,6 +49,7 @@ function App() {
                     <Stack.Screen name="Home" component={HomeScreen} />
                     <Stack.Screen name="Simple" component={SimpleScreen} />
                     <Stack.Screen name="FlatList" component={FlatListScreen} />
+                    <Stack.Screen name='ScrollView' component={ScrollViewScreen}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </GuidedProvider>
