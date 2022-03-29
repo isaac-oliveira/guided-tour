@@ -2,12 +2,12 @@ import { useContext } from 'react';
 import { GuidedContext } from '../contexts';
 
 const useGuidedTour = (
-    name: string
+    initialName: string
 ): { current: string | null; start: () => void; close: () => void } => {
     const { current, setCurrent, close } = useContext(GuidedContext);
 
     const start = () => {
-        setCurrent(name);
+        setCurrent(initialName);
     };
 
     return { current, start, close };
