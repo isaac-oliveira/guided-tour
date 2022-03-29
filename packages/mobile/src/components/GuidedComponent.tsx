@@ -28,13 +28,13 @@ const GuidedComponent = ({
             nextName
         });
 
-    const [isDragging, setIsDragging] = useState<boolean | null>(null);
-    const [measure, setMeasure] = useState<Measure | null>(null);
-    const [dimensions, setDimensions] = useState<Dimensions | null>(null);
-
     useEffect(() => {
         setModalVisibily(focused);
     }, [focused]);
+
+    const [isDragging, setIsDragging] = useState<boolean | null>(null);
+    const [measure, setMeasure] = useState<Measure | null>(null);
+    const [dimensions, setDimensions] = useState<Dimensions | null>(null);
 
     const { containerRef } = useContext(ScrollContext);
 
@@ -86,19 +86,19 @@ const GuidedComponent = ({
     };
 
     const onLayoutComponent = () => {
-        if (isDragging === null && scrollControl === undefined) {
-            loadMeasureInWindow();
-            setIsDragging(false);
-            return;
-        }
+        // if (isDragging === null) {
+        //     setIsDragging(false);
+        //     loadMeasureInWindow();
+        //     return;
+        // }
         setIsDragging(!!scrollControl);
         loadMeasureLayout();
         setTimeout(
             () => {
                 loadMeasureInWindow();
-                setTimeout(() => setIsDragging(false), 250);
+                setTimeout(() => setIsDragging(false), 600);
             },
-            scrollControl !== undefined ? 1000 : 0
+            scrollControl !== undefined ? 800 : 0
         );
     };
 
@@ -129,7 +129,7 @@ const GuidedComponent = ({
                         onLayout={onLayoutTooltip}
                         style={styles.tooltipContainer}
                     >
-                        {renderTooltip && !isStartGuide &&
+                        {renderTooltip &&
                             renderTooltip({
                                 data: tooltipData,
                                 current,
@@ -152,15 +152,14 @@ const getStyles = ({
     measure,
     dimensions,
     tooltipPosition
-}: any) => {
-    const isVisible = focused && measure && dimensions && isDragging === false;
-    return StyleSheet.create({
+}: any) =>
+    StyleSheet.create({
         container: {
             flex: 1,
             backgroundColor: backgroundColor || '#0201017f'
         },
         componentContainer: {
-            opacity: isVisible ? 1 : 0,
+            opacity: focused && measure && !isDragging ? 1 : 0,
             top: Platform.select({
                 android: (measure?.top || 0) + insets.top,
                 default: measure?.top || 0
@@ -171,7 +170,7 @@ const getStyles = ({
             position: 'absolute',
             justifyContent: 'center',
             alignItems: 'center',
-            opacity: isVisible ? 1 : 0,
+            opacity: focused && dimensions && !isDragging ? 1 : 0,
             ...tooltipPosition,
             top: Platform.select({
                 android: tooltipPosition.top + insets.top,
@@ -179,6 +178,5 @@ const getStyles = ({
             })
         }
     });
-};
 
 export { GuidedComponent };

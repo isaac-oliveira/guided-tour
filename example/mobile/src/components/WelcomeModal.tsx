@@ -1,9 +1,9 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { Feather } from '@expo/vector-icons';
-import type { WelcomeModalProps } from '@guided-tour/core';
+import type { WelcomeModalData } from '@guided-tour/core';
 
-const WelcomeModal = ({ title, text, onPress, onPressClose }: WelcomeModalProps) => {
+const WelcomeModal = ({ title, text, onPress, onPressClose }: WelcomeModalData) => {
   return (
     <View style={styles.container}>
       <View style={styles.modalView}>
@@ -26,7 +26,7 @@ const IconButton = ({
     color,
     backgroundColor = 'transparent',
     onPress
-}) => {
+}: any) => {
     return (
         <TouchableOpacity
             style={{

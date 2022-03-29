@@ -37,10 +37,14 @@ export interface TooltipProps {
     close: () => void;
 }
 
-export interface WelcomeModalProps {
+export interface WelcomeModalData {
     title: string;
     text: string;
     onPress: () => void;
+    onPressClose: () => void;
+}
+
+export interface WelcomeModalProps {
     closeWelcome: () => void;
     close: () => void;
 }
@@ -53,6 +57,7 @@ export interface IGuidedContext {
     current: string | null;
     setCurrent: (current: string | null) => void;
     close: () => void;
+    setIsStartGuide: (value: boolean) => void
 }
 
 export type GuidedProviderProps = React.PropsWithChildren<{
@@ -74,7 +79,10 @@ export type IGuided = {
     isFirst: boolean;
     isLast: boolean;
     renderTooltip?: (props: TooltipProps) => React.ReactElement<any>;
+    renderWelcome?: (props: WelcomeModalProps) => React.ReactElement<any>;
     previous: () => void;
     next: () => void;
     close: () => void;
+    closeWelcome: () => void;
+    isStartGuide: boolean;
 };
