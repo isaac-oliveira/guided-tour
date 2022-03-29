@@ -1,6 +1,6 @@
 {
     "name": "@guided-tour/core",
-    "version": "1.0.12",
+    "version": "1.0.0",
     "main": "lib/commonjs/index.js",
     "react-native": "src/index.ts",
     "source": "src/index.ts",
