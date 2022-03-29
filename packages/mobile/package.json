@@ -1,0 +1,58 @@
+{
+    "name": "@guided-tour/mobile",
+    "version": "1.0.12",
+    "main": "lib/commonjs/index.js",
+    "react-native": "src/index.ts",
+    "source": "src/index.ts",
+    "module": "lib/module/index.js",
+    "types": "lib/typescript/src/index.d.ts",
+    "private": false,
+    "files": [
+        "lib/",
+        "src/"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "ssh://git@github.com:isaac-oliveira/guided-tour.git",
+        "directory": "packages/mobile"
+    },
+    "author": "isaac-oliveira <isaacsantos9876@gmail.com>",
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "prepare": "bob build",
+        "clean": "del lib"
+    },
+    "devDependencies": {
+        "@guided-tour/core": "^1.0.12",
+        "@types/react": "^17.0.9",
+        "react": "17.0.1",
+        "react-native": "0.64.3",
+        "react-native-builder-bob": "^0.18.2",
+        "react-native-safe-area-context": "^4.2.2",
+        "typescript": "^4.6.2"
+    },
+    "peerDependencies": {
+        "@guided-tour/core": "*",
+        "react": "*",
+        "react-native": "*",
+        "react-native-safe-area-context": "*"
+    },
+    "react-native-builder-bob": {
+        "source": "src",
+        "output": "lib",
+        "targets": [
+            "commonjs",
+            "module",
+            [
+                "typescript",
+                {
+                    "project": "tsconfig.build.json"
+                }
+            ]
+        ]
+    },
+    "gitHead": "3b94f62d339b2e489e16bb70f778427a8471aeed"
+}
