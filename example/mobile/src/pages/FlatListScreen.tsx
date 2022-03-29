@@ -14,30 +14,7 @@ import {
     useScrollHandler,
     ScrollProvider
 } from '@guided-tour/mobile';
-
-const data = [
-    { id: 1, title: 'Item 1', description: 'Description' },
-    { id: 2, title: 'Item 2', description: 'Description' },
-    { id: 3, title: 'Item 3', description: 'Description' },
-    { id: 4, title: 'Item 4', description: 'Description' },
-    { id: 5, title: 'Item 5', description: 'Description' },
-    { id: 6, title: 'Item 6', description: 'Description' },
-    { id: 7, title: 'Item 7', description: 'Description' },
-    { id: 8, title: 'Item 8', description: 'Description' },
-    { id: 9, title: 'Item 9', description: 'Description' },
-    { id: 10, title: 'Item 10', description: 'Description' },
-    { id: 11, title: 'Item 11', description: 'Description' },
-    { id: 12, title: 'Item 12', description: 'Description' },
-    { id: 13, title: 'Item 13', description: 'Description' },
-    { id: 14, title: 'Item 14', description: 'Description' },
-    { id: 15, title: 'Item 15', description: 'Description' },
-    { id: 16, title: 'Item 16', description: 'Description' },
-    { id: 17, title: 'Item 17', description: 'Description' },
-    { id: 18, title: 'Item 18', description: 'Description' },
-    { id: 19, title: 'Item 19', description: 'Description' },
-    { id: 20, title: 'Item 20', description: 'Description' },
-    { id: 21, title: 'Item 21', description: 'Description' }
-];
+import listData from '../mocks'
 
 function FlatListScreen() {
     const flatRef = useRef<FlatList>();
@@ -137,7 +114,7 @@ function FlatListScreen() {
                 <FlatList
                     ref={flatRef}
                     style={{ flex: 1 }}
-                    data={data}
+                    data={listData}
                     keyExtractor={(item) => `item-${item.id}`}
                     CellRendererComponent={CellRendererComponent}
                     ListHeaderComponent={ListHeaderComponent}
