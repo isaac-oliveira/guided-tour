@@ -37,11 +37,11 @@ function App() {
         );
     };
 
-    const renderWelcome = ({ closeWelcome, close }: WelcomeModalProps) => {
+    const renderWelcome = ({ closeWelcome, close, data }: WelcomeModalProps) => {
         return (
           <WelcomeModal
-            title='Bem-vindo (a)'
-            text='Insira aqui o texto a ser exibido no modal de inicializção do guided tour.....'
+            title={data.title}
+            text={data.description}
             onPressClose={close}
             onPress={closeWelcome}
           />

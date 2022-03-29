@@ -40,13 +40,13 @@ const data = [
 ];
 
 function FlatListScreen() {
-    const flatRef = useRef<FlatList>();
-    const { start } = useGuidedTour('header');
+    const flatRef = useRef<FlatList>(null);
+    const { start } = useGuidedTour({initialName: 'header', welcomeData: {title: "FlatList", description: 'qualquer coisa 2'}});
 
     const { height } = useWindowDimensions();
 
     const { scrollControl } = useScrollHandler((position) => {
-        flatRef.current.scrollToOffset({
+        flatRef.current?.scrollToOffset({
             offset: position.y - height / 2
         });
     }, []);

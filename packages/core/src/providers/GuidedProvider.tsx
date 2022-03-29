@@ -12,6 +12,7 @@ const GuidedProvider = ({
 }: GuidedProviderProps) => {
     const [current, setCurrent] = useState<string | null>(null);
     const [isStartGuide, setIsStartGuide] = useState<boolean>(false);
+    const [welcomeData, setWelcomeData] = useState<any>({})
 
     const close = () => {
         setCurrent(null);
@@ -32,9 +33,11 @@ const GuidedProvider = ({
             renderWelcome,
             isStartGuide,
             setIsStartGuide,
-            closeWelcome
+            closeWelcome,
+            welcomeData,
+            setWelcomeData
         }),
-        [current, backgroundColor, insets, renderTooltip, renderWelcome, isStartGuide]
+        [current, backgroundColor, insets, renderTooltip, renderWelcome, isStartGuide, welcomeData]
     );
 
     return (

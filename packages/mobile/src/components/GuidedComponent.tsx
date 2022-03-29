@@ -22,7 +22,7 @@ const GuidedComponent = ({
     const ref = useRef<View>(null);
     const [modalVisibily, setModalVisibily] = useState<boolean>(false);
 
-    const { current, backgroundColor, insets, renderTooltip, closeWelcome, isStartGuide, renderWelcome, close, ...rest } =
+    const { current, backgroundColor, insets, renderTooltip, closeWelcome, isStartGuide, renderWelcome, close, welcomeData, ...rest } =
         useGuided({
             previousName,
             nextName
@@ -117,7 +117,7 @@ const GuidedComponent = ({
                 onDismiss={() => setModalVisibily(false)}
                 transparent
                 >
-                { renderWelcome && isStartGuide ? renderWelcome({closeWelcome, close}) :
+                { renderWelcome && isStartGuide ? renderWelcome({closeWelcome, close, data: welcomeData}) :
                 <View style={styles.container}>
                     <View
                         onLayout={onLayoutComponent}
