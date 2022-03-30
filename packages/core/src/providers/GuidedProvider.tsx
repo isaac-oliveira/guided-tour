@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { GuidedContext } from '../contexts';
 
-import type { GuidedProviderProps } from '../@types';
+import type { GuidedProviderProps, WelcomeData } from '../@types';
 
 const GuidedProvider = ({
     children,
@@ -10,17 +10,23 @@ const GuidedProvider = ({
     renderTooltip,
     renderWelcome
 }: GuidedProviderProps) => {
+    const onClose = useRef(() => {});
     const [current, setCurrent] = useState<string | null>(null);
     const [isStartGuide, setIsStartGuide] = useState<boolean>(false);
-    const [welcomeData, setWelcomeData] = useState<any>({})
+    const [welcomeData, setWelcomeData] = useState<WelcomeData>();
+
+    const setOnClose = (callback: () => void) => {
+        onClose.current = callback;
+    };
 
     const close = () => {
         setCurrent(null);
+        onClose.current();
     };
 
     const closeWelcome = () => {
         setIsStartGuide(false);
-    }
+    };
 
     const value = useMemo(
         () => ({
@@ -35,9 +41,18 @@ const GuidedProvider = ({
             setIsStartGuide,
             closeWelcome,
             welcomeData,
-            setWelcomeData
+            setWelcomeData,
+            setOnClose
         }),
-        [current, backgroundColor, insets, renderTooltip, renderWelcome, isStartGuide, welcomeData]
+        [
+            current,
+            backgroundColor,
+            insets,
+            renderTooltip,
+            renderWelcome,
+            isStartGuide,
+            welcomeData
+        ]
     );
 
     return (

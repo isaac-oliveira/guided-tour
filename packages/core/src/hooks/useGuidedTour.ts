@@ -1,29 +1,40 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { GuidedContext } from '../contexts';
 
 type Options = {
-    initialName: string
-    welcomeData: {
-        title: string
-        description: string
-    }
-}
+    initialName: string;
+    welcomeData?: {
+        title: string;
+        description: string;
+    };
+    onClose: () => void;
+};
 
 const useGuidedTour = ({
     initialName,
-    welcomeData
-}: Options): { current: string | null; start: () => void; close: () => void } => {
-    const { current, setCurrent, close, setIsStartGuide, setWelcomeData } = useContext(GuidedContext);
+    welcomeData,
+    onClose
+}: Options): {
+    current: string | null;
+    start: () => void;
+    close: () => void;
+} => {
+    const {
+        current,
+        setCurrent,
+        renderWelcome,
+        setOnClose,
+        setWelcomeData,
+        setIsStartGuide,
+        close
+    } = useContext(GuidedContext);
 
     const start = () => {
-        setIsStartGuide(true);
+        setOnClose(onClose);
+        setWelcomeData(welcomeData);
+        setIsStartGuide(!!welcomeData && !!renderWelcome);
         setCurrent(initialName);
-        console.log("entrou aqui")
     };
-
-    useEffect(() => {
-        setWelcomeData(welcomeData)
-    }, [welcomeData])
 
     return { current, start, close };
 };

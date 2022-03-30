@@ -21,11 +21,18 @@ export type Anchor =
     | 'right_bottom'
     | 'right_center';
 
-export type TooltipData = {
+export type Data = {
     title: string;
     description: string;
+} & {
+    [key: string]: any;
+};
+
+export type TooltipData = Data & {
     anchor: Anchor;
 };
+
+export type WelcomeData = Data | undefined;
 
 export interface TooltipProps {
     isLast: boolean;
@@ -37,16 +44,10 @@ export interface TooltipProps {
     close: () => void;
 }
 
-export interface WelcomeModalData {
-    title: string;
-    text: string;
-    onPress: () => void;
-    onPressClose: () => void;
-}
-
 export interface WelcomeModalProps {
     closeWelcome: () => void;
     close: () => void;
+    data: WelcomeData;
 }
 
 export interface IGuidedContext {
@@ -56,8 +57,13 @@ export interface IGuidedContext {
     renderWelcome?: (props: WelcomeModalProps) => React.ReactElement<any>;
     current: string | null;
     setCurrent: (current: string | null) => void;
+    welcomeData?: WelcomeData;
+    setWelcomeData: (welcomeData: WelcomeData) => void;
     close: () => void;
-    setIsStartGuide: (value: boolean) => void
+    setIsStartGuide: (value: boolean) => void;
+    closeWelcome: () => void;
+    setOnClose: (callback: () => void) => void;
+    isStartGuide?: boolean;
 }
 
 export type GuidedProviderProps = React.PropsWithChildren<{
@@ -83,6 +89,9 @@ export type IGuided = {
     previous: () => void;
     next: () => void;
     close: () => void;
+    welcomeData?: WelcomeData;
+    setWelcomeData: (welcomeData: WelcomeData) => void;
     closeWelcome: () => void;
-    isStartGuide: boolean;
+    isStartGuide?: boolean;
+    setOnClose: (callback: () => void) => void;
 };

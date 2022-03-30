@@ -22,11 +22,21 @@ const GuidedComponent = ({
     const ref = useRef<View>(null);
     const [modalVisibily, setModalVisibily] = useState<boolean>(false);
 
-    const { current, backgroundColor, insets, renderTooltip, closeWelcome, isStartGuide, renderWelcome, close, welcomeData, ...rest } =
-        useGuided({
-            previousName,
-            nextName
-        });
+    const {
+        current,
+        backgroundColor,
+        insets,
+        renderTooltip,
+        closeWelcome,
+        isStartGuide,
+        renderWelcome,
+        close,
+        welcomeData,
+        ...rest
+    } = useGuided({
+        previousName,
+        nextName
+    });
 
     useEffect(() => {
         setModalVisibily(focused);
@@ -96,7 +106,7 @@ const GuidedComponent = ({
         setTimeout(
             () => {
                 loadMeasureInWindow();
-                setTimeout(() => setIsDragging(false), 250);
+                setTimeout(() => setIsDragging(false), 400);
             },
             scrollControl !== undefined ? 1000 : 0
         );
@@ -116,29 +126,31 @@ const GuidedComponent = ({
                 statusBarTranslucent
                 onDismiss={() => setModalVisibily(false)}
                 transparent
-                >
-                { renderWelcome && isStartGuide ? renderWelcome({closeWelcome, close, data: welcomeData}) :
-                <View style={styles.container}>
-                    <View
-                        onLayout={onLayoutComponent}
-                        style={styles.componentContainer}
-                    >
-                        {renderComponent()}
+            >
+                {welcomeData && renderWelcome && isStartGuide ? (
+                    renderWelcome({ closeWelcome, close, data: welcomeData })
+                ) : (
+                    <View style={styles.container}>
+                        <View
+                            onLayout={onLayoutComponent}
+                            style={styles.componentContainer}
+                        >
+                            {renderComponent()}
+                        </View>
+                        <View
+                            onLayout={onLayoutTooltip}
+                            style={styles.tooltipContainer}
+                        >
+                            {renderTooltip &&
+                                renderTooltip({
+                                    data: tooltipData,
+                                    current,
+                                    close,
+                                    ...rest
+                                })}
+                        </View>
                     </View>
-                    <View
-                        onLayout={onLayoutTooltip}
-                        style={styles.tooltipContainer}
-                    >
-                        {renderTooltip &&
-                            renderTooltip({
-                                data: tooltipData,
-                                current,
-                                close,
-                                ...rest
-                            })}
-                    </View>
-                </View>
-                }
+                )}
             </Modal>
         </>
     );
@@ -152,34 +164,33 @@ const getStyles = ({
     measure,
     dimensions,
     tooltipPosition
-}: any) =>
-    {
-        const isVisible = focused && measure && dimensions && isDragging === false; 
-        return StyleSheet.create({
-            container: {
-                flex: 1,
-                backgroundColor: backgroundColor || '#0201017f'
-            },
-            componentContainer: {
-                opacity: isVisible ? 1 : 0,
-                top: Platform.select({
-                    android: (measure?.top || 0) + insets.top,
-                    default: measure?.top || 0
-                }),
-                left: measure?.left || 0
-            },
-            tooltipContainer: {
-                position: 'absolute',
-                justifyContent: 'center',
-                alignItems: 'center',
-                opacity: isVisible ? 1 : 0,
-                ...tooltipPosition,
-                top: Platform.select({
-                    android: tooltipPosition.top + insets.top,
-                    default: tooltipPosition.top
-                })
-            }
-        });
-    }
+}: any) => {
+    const isVisible = focused && measure && dimensions && isDragging === false;
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: backgroundColor || '#0201017f'
+        },
+        componentContainer: {
+            opacity: isVisible ? 1 : 0,
+            top: Platform.select({
+                android: (measure?.top || 0) + insets.top,
+                default: measure?.top || 0
+            }),
+            left: measure?.left || 0
+        },
+        tooltipContainer: {
+            position: 'absolute',
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: isVisible ? 1 : 0,
+            ...tooltipPosition,
+            top: Platform.select({
+                android: tooltipPosition.top + insets.top,
+                default: tooltipPosition.top
+            })
+        }
+    });
+};
 
 export { GuidedComponent };

@@ -6,5 +6,8 @@ export const GuidedContext = createContext<IGuidedContext>({
     current: null,
     setCurrent: () => {},
     close: () => {},
-    setIsStartGuide: () => {}
+    setIsStartGuide: () => {},
+    setOnClose: () => {},
+    setWelcomeData: () => {},
+    closeWelcome: () => {}
 });

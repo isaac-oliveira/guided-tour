@@ -41,7 +41,13 @@ const data = [
 
 function FlatListScreen() {
     const flatRef = useRef<FlatList>(null);
-    const { start } = useGuidedTour({initialName: 'header', welcomeData: {title: "FlatList", description: 'qualquer coisa 2'}});
+    const { start } = useGuidedTour({
+        initialName: 'header',
+        welcomeData: { title: 'FlatList', description: 'qualquer coisa 2' },
+        onClose: () => {
+            console.log('Close FlatList');
+        }
+    });
 
     const { height } = useWindowDimensions();
 

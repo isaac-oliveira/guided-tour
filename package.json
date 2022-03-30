@@ -1,12 +1,13 @@
 {
     "name": "root",
     "version": "1.0.0",
-    "private": false,
+    "private": true,
     "scripts": {
         "prepare": "husky install",
         "lint": "eslint packages --ext ts,tsx --fix",
         "test": "jest --passWithNoTests",
         "example": "yarn --cwd example/mobile",
+        "prerelease": "lerna run clean",
         "release": "lerna publish"
     },
     "workspaces": {

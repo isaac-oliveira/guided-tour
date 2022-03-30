@@ -3,7 +3,11 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { WelcomeModalProps, GuidedProvider, TooltipProps } from '@guided-tour/core';
+import {
+    WelcomeModalProps,
+    GuidedProvider,
+    TooltipProps
+} from '@guided-tour/core';
 
 import HomeScreen from './src/pages/HomeScreen';
 import SimpleScreen from './src/pages/SimpleScreen';
@@ -37,16 +41,20 @@ function App() {
         );
     };
 
-    const renderWelcome = ({ closeWelcome, close, data }: WelcomeModalProps) => {
+    const renderWelcome = ({
+        closeWelcome,
+        close,
+        data
+    }: WelcomeModalProps) => {
         return (
-          <WelcomeModal
-            title={data.title}
-            text={data.description}
-            onPressClose={close}
-            onPress={closeWelcome}
-          />
-        )
-    }
+            <WelcomeModal
+                title={data.title}
+                text={data.description}
+                onPressClose={close}
+                onPress={closeWelcome}
+            />
+        );
+    };
 
     return (
         <GuidedProvider
