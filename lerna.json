@@ -5,7 +5,7 @@
     "version": "independent",
     "command": {
         "publish": {
-            "allowBranch": "develop",
+            "allowBranch": "main",
             "conventionalCommits": true,
             "createRelease": "github",
             "message": "chore: publish",

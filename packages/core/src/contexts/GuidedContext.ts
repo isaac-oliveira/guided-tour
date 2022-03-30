@@ -5,5 +5,9 @@ import type { IGuidedContext } from '../@types';
 export const GuidedContext = createContext<IGuidedContext>({
     current: null,
     setCurrent: () => {},
-    close: () => {}
+    close: () => {},
+    setIsStartGuide: () => {},
+    setOnClose: () => {},
+    setWelcomeData: () => {},
+    closeWelcome: () => {}
 });
