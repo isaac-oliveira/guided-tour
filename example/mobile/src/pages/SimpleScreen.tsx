@@ -4,7 +4,12 @@ import { useGuidedTour } from '@guided-tour/core';
 import { GuidedController } from '@guided-tour/mobile';
 
 function SimpleScreen() {
-    const { start } = useGuidedTour('rect-1');
+    const { start } = useGuidedTour({
+        initialName: 'rect-1',
+        onClose: () => {
+            console.log('Close simple');
+        }
+    });
 
     return (
         <SafeAreaView style={{ flex: 1 }}>

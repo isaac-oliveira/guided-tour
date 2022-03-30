@@ -22,19 +22,29 @@ const GuidedComponent = ({
     const ref = useRef<View>(null);
     const [modalVisibily, setModalVisibily] = useState<boolean>(false);
 
-    const { current, backgroundColor, insets, renderTooltip, ...rest } =
-        useGuided({
-            previousName,
-            nextName
-        });
-
-    const [isDragging, setIsDragging] = useState<boolean | null>(null);
-    const [measure, setMeasure] = useState<Measure | null>(null);
-    const [dimensions, setDimensions] = useState<Dimensions | null>(null);
+    const {
+        current,
+        backgroundColor,
+        insets,
+        renderTooltip,
+        closeWelcome,
+        isStartGuide,
+        renderWelcome,
+        close,
+        welcomeData,
+        ...rest
+    } = useGuided({
+        previousName,
+        nextName
+    });
 
     useEffect(() => {
         setModalVisibily(focused);
     }, [focused]);
+
+    const [isDragging, setIsDragging] = useState<boolean | null>(null);
+    const [measure, setMeasure] = useState<Measure | null>(null);
+    const [dimensions, setDimensions] = useState<Dimensions | null>(null);
 
     const { containerRef } = useContext(ScrollContext);
 
@@ -96,7 +106,7 @@ const GuidedComponent = ({
         setTimeout(
             () => {
                 loadMeasureInWindow();
-                setTimeout(() => setIsDragging(false), 250);
+                setTimeout(() => setIsDragging(false), 400);
             },
             scrollControl !== undefined ? 1000 : 0
         );
@@ -117,25 +127,30 @@ const GuidedComponent = ({
                 onDismiss={() => setModalVisibily(false)}
                 transparent
             >
-                <View style={styles.container}>
-                    <View
-                        onLayout={onLayoutComponent}
-                        style={styles.componentContainer}
-                    >
-                        {renderComponent()}
+                {welcomeData && renderWelcome && isStartGuide ? (
+                    renderWelcome({ closeWelcome, close, data: welcomeData })
+                ) : (
+                    <View style={styles.container}>
+                        <View
+                            onLayout={onLayoutComponent}
+                            style={styles.componentContainer}
+                        >
+                            {renderComponent()}
+                        </View>
+                        <View
+                            onLayout={onLayoutTooltip}
+                            style={styles.tooltipContainer}
+                        >
+                            {renderTooltip &&
+                                renderTooltip({
+                                    data: tooltipData,
+                                    current,
+                                    close,
+                                    ...rest
+                                })}
+                        </View>
                     </View>
-                    <View
-                        onLayout={onLayoutTooltip}
-                        style={styles.tooltipContainer}
-                    >
-                        {renderTooltip &&
-                            renderTooltip({
-                                data: tooltipData,
-                                current,
-                                ...rest
-                            })}
-                    </View>
-                </View>
+                )}
             </Modal>
         </>
     );
