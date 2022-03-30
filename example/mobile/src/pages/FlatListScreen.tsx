@@ -14,7 +14,7 @@ import {
     useScrollHandler,
     ScrollProvider
 } from '@guided-tour/mobile';
-import listData from '../mocks'
+import listData from '../mocks';
 
 function FlatListScreen() {
     const flatRef = useRef<FlatList>(null);

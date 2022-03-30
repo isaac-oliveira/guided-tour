@@ -1,99 +1,148 @@
 import React, { useRef } from 'react';
-import { Button, StyleSheet, ScrollView, View, useWindowDimensions } from 'react-native';
+import {
+    Button,
+    StyleSheet,
+    ScrollView,
+    View,
+    useWindowDimensions,
+    SafeAreaView
+} from 'react-native';
 import { useGuidedTour } from '@guided-tour/core';
-import { GuidedController, ScrollProvider, useScrollHandler } from '@guided-tour/mobile';
+import {
+    GuidedController,
+    ScrollProvider,
+    useScrollHandler
+} from '@guided-tour/mobile';
 
 function ScrollViewScreen() {
-    const scrollRef = useRef<ScrollView>(null)
-    const { start } = useGuidedTour('item-1');
+    const scrollRef = useRef<ScrollView>(null);
+    const { start } = useGuidedTour({
+        initialName: 'item-1',
+        onClose: () => {}
+    });
 
     const { height } = useWindowDimensions();
 
     const { scrollControl } = useScrollHandler((position) => {
         scrollRef.current?.scrollTo({
-            y: (position.y - (height / 2) )
+            y: position.y - height / 2
         });
     }, []);
 
     return (
         <ScrollProvider>
-            <ScrollView ref={scrollRef} style={{ flex: 1 }}>
-                <GuidedController 
-                    scrollControl={scrollControl}
-                    name= "item-1"
-                    previousName={null}
-                    nextName="item-2"
-                    tooltipData= {{
-                        title: 'Header',
-                        description: 'Cabeçalho',
-                        anchor: 'bottom_center'
-                    }}
-                    renderComponent={(ref) => (
-                        <View ref={ref} style={[styles.header, {backgroundColor: '#68538F'}]}/>
-                    )}
-                />
-                <GuidedController 
-                    scrollControl={scrollControl}
-                    name= "item-2"
-                    previousName='item-1'
-                    nextName='item-3'
-                    tooltipData= {{
-                        title: 'Item',
-                        description: 'this is the item',
-                        anchor: 'top_center'
-                    }}
-                    renderComponent={(ref) => (
-                        <View ref={ref} style={[styles.rect, {backgroundColor: '#B2E7E8'}]}/>
-                    )}
-                />
-                <GuidedController 
-                    scrollControl={scrollControl}
-                    name= "item-3"
-                    previousName='item-2'
-                    nextName='item-4'
-                    tooltipData= {{
-                        title: 'Item',
-                        description: 'this is the item',
-                        anchor: 'top_center'
-                    }}
-                    renderComponent={(ref) => (
-                        <View ref={ref} style={[styles.rect, {backgroundColor: '#8FB9AA'}]}/>
-                    )}
-                />
-                <View style={[styles.squareContainer, {backgroundColor: '#FFF'}]}>
-                    <GuidedController 
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView ref={scrollRef} style={{ flex: 1 }}>
+                    <GuidedController
                         scrollControl={scrollControl}
-                        name= "item-4"
-                        previousName='item-3'
-                        nextName='item-5'
-                        tooltipData= {{
-                            title: 'Item',
-                            description: 'This is my item',
-                            anchor: 'top_left'
+                        name="item-1"
+                        previousName={null}
+                        nextName="item-2"
+                        tooltipData={{
+                            title: 'Header',
+                            description: 'Cabeçalho',
+                            anchor: 'bottom_center'
                         }}
                         renderComponent={(ref) => (
-                            <View ref={ref} style={styles.square}/>
+                            <View
+                                ref={ref}
+                                style={[
+                                    styles.header,
+                                    { backgroundColor: '#68538F' }
+                                ]}
+                            />
                         )}
                     />
-                    <View style={styles.square}/>
-                    <View style={styles.square}/>
-                </View>
-                <GuidedController 
-                    scrollControl={scrollControl}
-                    name= "item-5"
-                    previousName='item-4'
-                    nextName={null}
-                    tooltipData= {{
-                        title: 'Footer',
-                        description: 'Rodapé',
-                        anchor: 'top_center'
-                    }}
-                    renderComponent={(ref) => (
-                        <View ref={ref} style={[styles.header, {backgroundColor: '#68538F'}]}/>
-                    )}
-                />
-            </ScrollView>
-            <Button title="Start" onPress={start} />
+                    <View style={styles.rectContainer}>
+                        <GuidedController
+                            scrollControl={scrollControl}
+                            name="item-2"
+                            previousName="item-1"
+                            nextName="item-3"
+                            tooltipData={{
+                                title: 'Item',
+                                description: 'this is the item',
+                                anchor: 'top_center'
+                            }}
+                            renderComponent={(ref) => (
+                                <View
+                                    ref={ref}
+                                    style={[
+                                        styles.rect,
+                                        { backgroundColor: '#B2E7E8' }
+                                    ]}
+                                />
+                            )}
+                        />
+                    </View>
+                    <View style={styles.rectContainer}>
+                        <GuidedController
+                            scrollControl={scrollControl}
+                            name="item-3"
+                            previousName="item-2"
+                            nextName="item-4"
+                            tooltipData={{
+                                title: 'Item',
+                                description: 'this is the item',
+                                anchor: 'top_center'
+                            }}
+                            renderComponent={(ref) => (
+                                <View
+                                    ref={ref}
+                                    style={[
+                                        styles.rect,
+                                        { backgroundColor: '#8FB9AA' }
+                                    ]}
+                                />
+                            )}
+                        />
+                    </View>
+                    <View
+                        style={[
+                            styles.squareContainer,
+                            { backgroundColor: '#FFF' }
+                        ]}
+                    >
+                        <GuidedController
+                            scrollControl={scrollControl}
+                            name="item-4"
+                            previousName="item-3"
+                            nextName="item-5"
+                            tooltipData={{
+                                title: 'Item',
+                                description: 'This is my item',
+                                anchor: 'top_left'
+                            }}
+                            renderComponent={(ref) => (
+                                <View ref={ref} style={styles.square} />
+                            )}
+                        />
+                        <View style={styles.square} />
+                        <View style={styles.square} />
+                    </View>
+                    <GuidedController
+                        scrollControl={scrollControl}
+                        name="item-5"
+                        previousName="item-4"
+                        nextName={null}
+                        tooltipData={{
+                            title: 'Footer',
+                            description: 'Rodapé',
+                            anchor: 'top_center'
+                        }}
+                        renderComponent={(ref) => (
+                            <View
+                                ref={ref}
+                                style={[
+                                    styles.header,
+                                    { backgroundColor: '#68538F' }
+                                ]}
+                            />
+                        )}
+                    />
+                </ScrollView>
+                <Button title="Start" onPress={start} />
+            </SafeAreaView>
         </ScrollProvider>
     );
 }
@@ -103,10 +152,12 @@ const styles = StyleSheet.create({
         height: 300,
         width: 414
     },
+    rectContainer: {
+        marginVertical: 10
+    },
     rect: {
         height: 150,
-        width: 414,
-        marginVertical: 10
+        width: 414
     },
     squareContainer: {
         flexDirection: 'row',
