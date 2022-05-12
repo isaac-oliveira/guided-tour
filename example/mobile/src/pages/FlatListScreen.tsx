@@ -1,10 +1,12 @@
 import React, { useCallback, useRef } from 'react';
 import {
+    Alert,
     Button,
     FlatList,
     SafeAreaView,
     StyleSheet,
     Text,
+    TouchableOpacity,
     useWindowDimensions,
     View
 } from 'react-native';
@@ -50,7 +52,14 @@ function FlatListScreen() {
                     <View
                         ref={ref}
                         style={[styles.rect, { backgroundColor: '#f00' }]}
-                    />
+                    >
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => Alert.alert('title', 'pressed')}
+                        >
+                            <Text>Button</Text>
+                        </TouchableOpacity>
+                    </View>
                 )}
             />
         );
@@ -142,12 +151,17 @@ const styles = StyleSheet.create({
     rect: {
         height: 150,
         width: 414,
-        backgroundColor: '#ff0'
+        backgroundColor: '#ff0',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     itemContainer: {
         padding: 10,
         width: 414,
         marginHorizontal: 20
+    },
+    button: {
+        padding: 20
     }
 });
 

@@ -1,6 +1,6 @@
 import { useGuided } from '@guided-tour/core';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Platform, StyleSheet, View } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
@@ -137,6 +137,10 @@ const GuidedComponent = ({
                         >
                             {renderComponent()}
                         </View>
+                        <Pressable
+                            style={styles.pressable}
+                            onPress={() => {}}
+                        />
                         <View
                             onLayout={onLayoutTooltip}
                             style={styles.tooltipContainer}
@@ -189,6 +193,11 @@ const getStyles = ({
                 android: tooltipPosition.top + insets.top,
                 default: tooltipPosition.top
             })
+        },
+        pressable: {
+            position: 'absolute',
+            height: '100%',
+            width: '100%'
         }
     });
 };
