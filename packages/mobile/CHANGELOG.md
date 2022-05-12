@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/isaac-oliveira/guided-tour/compare/@guided-tour/mobile@1.1.0...@guided-tour/mobile@1.1.2) (2022-05-12)
+
+
+### Bug Fixes
+
+* desable click ([b7ae8a2](https://github.com/isaac-oliveira/guided-tour/commit/b7ae8a2871ca322cd9f4ba828d3c514c189539f6))
+
+
+
+
+
 ## [1.1.1](https://github.com/isaac-oliveira/guided-tour/compare/@guided-tour/mobile@1.1.0...@guided-tour/mobile@1.1.1) (2022-05-12)
 
 
