@@ -56,10 +56,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingHorizontal: 16
     },
     rect: {
-        width: '80%',
+        width: '100%',
         height: 150,
         backgroundColor: '#ff0',
         borderRadius: 20,

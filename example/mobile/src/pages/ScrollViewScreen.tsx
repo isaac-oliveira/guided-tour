@@ -149,7 +149,7 @@ function ScrollViewScreen() {
 
 const styles = StyleSheet.create({
     header: {
-        height: 300,
+        height: 240,
         width: 414
     },
     rectContainer: {

@@ -181,7 +181,9 @@ const getStyles = ({
                 android: (measure?.top || 0) + insets.top,
                 default: measure?.top || 0
             }),
-            left: measure?.left || 0
+            left: measure?.left || 0,
+            width: measure?.width,
+            height: measure?.height
         },
         tooltipContainer: {
             position: 'absolute',
