@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.10](https://github.com/isaac-oliveira/guided-tour/compare/@guided-tour/mobile@1.1.8...@guided-tour/mobile@1.1.10) (2022-11-30)
+
+**Note:** Version bump only for package @guided-tour/mobile
+
+
+
+
+
 ## [1.1.8](https://github.com/isaac-oliveira/guided-tour/compare/@guided-tour/mobile@1.1.2...@guided-tour/mobile@1.1.8) (2022-11-30)
 
 
