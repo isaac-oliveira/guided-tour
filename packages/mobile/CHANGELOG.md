@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.8](https://github.com/isaac-oliveira/guided-tour/compare/@guided-tour/mobile@1.1.2...@guided-tour/mobile@1.1.8) (2022-11-30)
+
+
+### Bug Fixes
+
+* corrige largura e altura ([e4c36ce](https://github.com/isaac-oliveira/guided-tour/commit/e4c36ce5a8e1f6fc33707e38d5cb1ca03f6feab9))
+
+
+
+
+
 ## [1.1.5](https://github.com/isaac-oliveira/guided-tour/compare/@guided-tour/mobile@1.1.2...@guided-tour/mobile@1.1.5) (2022-11-30)
 
 
