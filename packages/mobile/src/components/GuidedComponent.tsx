@@ -1,6 +1,6 @@
 import { useGuided } from '@guided-tour/core';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, View, Animated, LayoutAnimation } from 'react-native';
 
 import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
@@ -32,6 +32,10 @@ const GuidedComponent = ({
         renderWelcome,
         close,
         welcomeData,
+        lastComponentMeasure,
+        setLastComponentMeasure,
+        lastTooltipPosition,
+        setLastTooltipPosition,
         ...rest
     } = useGuided({
         previousName,
@@ -45,6 +49,18 @@ const GuidedComponent = ({
     const [isDragging, setIsDragging] = useState<boolean | null>(null);
     const [measure, setMeasure] = useState<Measure | null>(null);
     const [dimensions, setDimensions] = useState<Dimensions | null>(null);
+    const [animation, setAnimation] = useState(new Animated.ValueXY({x: lastComponentMeasure?.left || 0, y:  lastComponentMeasure?.top || 0}));
+    const [animationTooltip, setAnimationTooltip] = useState(new Animated.ValueXY({x: lastTooltipPosition?.left || 0, y:  lastTooltipPosition?.top || 0}));
+
+    const toggleSecondBox = () => {
+        Animated.timing( animation , {
+            toValue: { x: measure?.left || 0, y: measure?.top || 0},
+            duration: 50,
+            useNativeDriver: false
+        }).start()
+        setLastComponentMeasure(measure)
+    };
+
 
     const { containerRef } = useContext(ScrollContext);
 
@@ -56,6 +72,13 @@ const GuidedComponent = ({
             return { left: 0, top: 0 };
         }
         const { left, top } = getTooltipPostion(measure, dimensions);
+        
+        Animated.timing( animationTooltip , {
+            toValue: { x: left || 0, y: top || 0},
+            duration: 50,
+            useNativeDriver: false
+        }).start()
+        setLastTooltipPosition({ left, top })
         return { left, top };
     }, [measure, dimensions]);
 
@@ -85,6 +108,7 @@ const GuidedComponent = ({
     };
 
     const loadMeasureInWindow = () => {
+        toggleSecondBox();
         ref.current?.measureInWindow((left, top, width, height) => {
             setMeasure({
                 left,
@@ -121,8 +145,8 @@ const GuidedComponent = ({
         <>
             {renderComponent(ref)}
             <Modal
-                visible={modalVisibily}
-                animationType="fade"
+                visible={true}
+                animationType="none"
                 statusBarTranslucent
                 onDismiss={() => setModalVisibily(false)}
                 transparent
@@ -131,19 +155,25 @@ const GuidedComponent = ({
                     renderWelcome({ closeWelcome, close, data: welcomeData })
                 ) : (
                     <View style={styles.container}>
-                        <View
+                        <Animated.View
                             onLayout={onLayoutComponent}
-                            style={styles.componentContainer}
+                            style={[
+                                styles.componentContainer,
+                                animation.getLayout()
+                            ]}
                         >
                             {renderComponent()}
-                        </View>
+                        </Animated.View>
                         <Pressable
                             style={styles.pressable}
                             onPress={() => {}}
                         />
-                        <View
+                        <Animated.View
                             onLayout={onLayoutTooltip}
-                            style={styles.tooltipContainer}
+                            style={[
+                                styles.tooltipContainer,
+                                animationTooltip.getLayout()
+                            ]}
                         >
                             {renderTooltip &&
                                 renderTooltip({
@@ -152,7 +182,7 @@ const GuidedComponent = ({
                                     close,
                                     ...rest
                                 })}
-                        </View>
+                        </Animated.View>
                     </View>
                 )}
             </Modal>
@@ -163,7 +193,6 @@ const GuidedComponent = ({
 const getStyles = ({
     insets,
     focused,
-    backgroundColor,
     isDragging,
     measure,
     dimensions,
@@ -172,8 +201,7 @@ const getStyles = ({
     const isVisible = focused && measure && dimensions && isDragging === false;
     return StyleSheet.create({
         container: {
-            flex: 1,
-            backgroundColor: backgroundColor || '#0201017f'
+            flex: 1
         },
         componentContainer: {
             opacity: isVisible ? 1 : 0,
@@ -200,6 +228,12 @@ const getStyles = ({
             position: 'absolute',
             height: '100%',
             width: '100%'
+        },
+        moveLeft: {
+            alignSelf: 'flex-start'
+        },
+        moveRight: {
+            alignSelf: 'flex-end'
         }
     });
 };

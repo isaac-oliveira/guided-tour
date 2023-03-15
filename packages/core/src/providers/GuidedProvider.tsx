@@ -1,7 +1,8 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { GuidedContext } from '../contexts';
 
-import type { GuidedProviderProps, WelcomeData } from '../@types';
+import type { GuidedProviderProps, WelcomeData, Measure } from '../@types';
+import { View } from 'react-native';
 
 const GuidedProvider = ({
     children,
@@ -14,6 +15,8 @@ const GuidedProvider = ({
     const [current, setCurrent] = useState<string | null>(null);
     const [isStartGuide, setIsStartGuide] = useState<boolean>(false);
     const [welcomeData, setWelcomeData] = useState<WelcomeData>();
+    const [lastComponentMeasure, setLastComponentMeasure] = useState<Measure | null>(null);
+    const [lastTooltipPosition, setLastTooltipPosition] = useState<{top: number, left: number} | null>(null);
 
     const setOnClose = (callback: () => void) => {
         onClose.current = callback;
@@ -42,7 +45,11 @@ const GuidedProvider = ({
             closeWelcome,
             welcomeData,
             setWelcomeData,
-            setOnClose
+            setOnClose,
+            lastComponentMeasure,
+            setLastComponentMeasure,
+            lastTooltipPosition,
+            setLastTooltipPosition
         }),
         [
             current,
@@ -57,6 +64,7 @@ const GuidedProvider = ({
 
     return (
         <GuidedContext.Provider value={value}>
+            {(current || isStartGuide) && <View style={{position: 'absolute', opacity: 0.8 , backgroundColor: backgroundColor || '#0201017f' , width: '100%', height: '100%', zIndex: 1}}/>}
             {children}
         </GuidedContext.Provider>
     );

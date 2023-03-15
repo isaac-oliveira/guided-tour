@@ -34,7 +34,7 @@ function SimpleScreen() {
                     tooltipData={{
                         title: 'Rect 2',
                         description: 'Componente Rect 2',
-                        anchor: 'bottom_left'
+                        anchor: 'top_left'
                     }}
                     renderComponent={(ref) => (
                         <View
