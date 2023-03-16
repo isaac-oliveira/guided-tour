@@ -25,6 +25,8 @@ const GuidedProvider = ({
     const close = () => {
         setCurrent(null);
         onClose.current();
+        setLastComponentMeasure(null);
+        setLastTooltipPosition(null);
     };
 
     const closeWelcome = () => {

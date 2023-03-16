@@ -1,5 +1,5 @@
 import { useGuided } from '@guided-tour/core';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Platform, Pressable, StyleSheet, View, Animated, LayoutAnimation } from 'react-native';
 
 import { ScrollContext } from '../contexts';
@@ -48,17 +48,20 @@ const GuidedComponent = ({
 
     const [isDragging, setIsDragging] = useState<boolean | null>(null);
     const [measure, setMeasure] = useState<Measure | null>(null);
+    const [measureLayout, setMeasureLayout] = useState<Measure | null>(null);
     const [dimensions, setDimensions] = useState<Dimensions | null>(null);
-    const [animation, setAnimation] = useState(new Animated.ValueXY({x: lastComponentMeasure?.left || 0, y:  lastComponentMeasure?.top || 0}));
+    const [animation, setAnimation] = useState(new Animated.ValueXY({x: lastComponentMeasure?.left || 0, y: lastComponentMeasure?.top || 0}));
     const [animationTooltip, setAnimationTooltip] = useState(new Animated.ValueXY({x: lastTooltipPosition?.left || 0, y:  lastTooltipPosition?.top || 0}));
 
     const toggleSecondBox = () => {
+        console.log(lastComponentMeasure)
         Animated.timing( animation , {
-            toValue: { x: measure?.left || 0, y: measure?.top || 0},
-            duration: 50,
+            toValue: { x: measure?.left || measureLayout?.left || 0, y: measure?.top || measureLayout?.top || 0},
+            duration: scrollControl ? 30 : 50,
+            delay: 20,
             useNativeDriver: false
         }).start()
-        setLastComponentMeasure(measure)
+        setLastComponentMeasure(measure || measureLayout)
     };
 
 
@@ -76,6 +79,7 @@ const GuidedComponent = ({
         Animated.timing( animationTooltip , {
             toValue: { x: left || 0, y: top || 0},
             duration: 50,
+            delay: 20,
             useNativeDriver: false
         }).start()
         setLastTooltipPosition({ left, top })
@@ -96,10 +100,10 @@ const GuidedComponent = ({
         if (containerRef.current) {
             ref.current?.measureLayout(
                 containerRef.current,
-                (x, y) => {
+                (left, top, width, height) => {
+                    setMeasureLayout({left, top, width, height})
                     scrollControl?.onChangeScroll({
-                        x,
-                        y
+                        x: left, y: top
                     });
                 },
                 () => {}
@@ -107,8 +111,11 @@ const GuidedComponent = ({
         }
     };
 
+    useLayoutEffect(() => {
+        toggleSecondBox()
+    }, [!!measureLayout, tooltipPosition])
+
     const loadMeasureInWindow = () => {
-        toggleSecondBox();
         ref.current?.measureInWindow((left, top, width, height) => {
             setMeasure({
                 left,
@@ -117,6 +124,7 @@ const GuidedComponent = ({
                 height
             });
         });
+        toggleSecondBox();
     };
 
     const onLayoutComponent = () => {
@@ -198,7 +206,7 @@ const getStyles = ({
     dimensions,
     tooltipPosition
 }: any) => {
-    const isVisible = focused && measure && dimensions && isDragging === false;
+    const isVisible = focused && measure && dimensions;
     return StyleSheet.create({
         container: {
             flex: 1
