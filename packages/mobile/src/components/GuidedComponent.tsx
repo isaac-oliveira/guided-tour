@@ -1,6 +1,6 @@
 import { useGuided } from '@guided-tour/core';
 import React, { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, View, Animated, LayoutAnimation } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, View, Animated } from 'react-native';
 
 import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
@@ -42,26 +42,21 @@ const GuidedComponent = ({
         nextName
     });
 
-    useEffect(() => {
-        setModalVisibily(focused);
-    }, [focused]);
-
     const [isDragging, setIsDragging] = useState<boolean | null>(null);
-    const [measure, setMeasure] = useState<Measure | null>(null);
-    const [measureLayout, setMeasureLayout] = useState<Measure | null>(null);
+    const [measure, setMeasure] = useState<Measure | null>(lastComponentMeasure || null);
+    const [measureLayout, setMeasureLayout] = useState<Measure | null>(lastComponentMeasure || null);
     const [dimensions, setDimensions] = useState<Dimensions | null>(null);
     const [animation, setAnimation] = useState(new Animated.ValueXY({x: lastComponentMeasure?.left || 0, y: lastComponentMeasure?.top || 0}));
     const [animationTooltip, setAnimationTooltip] = useState(new Animated.ValueXY({x: lastTooltipPosition?.left || 0, y:  lastTooltipPosition?.top || 0}));
 
     const toggleSecondBox = () => {
-        console.log(lastComponentMeasure)
         Animated.timing( animation , {
-            toValue: { x: measure?.left || measureLayout?.left || 0, y: measure?.top || measureLayout?.top || 0},
+            toValue: { x: measure?.left || 0, y: measure?.top || 0},
             duration: scrollControl ? 30 : 50,
             delay: 20,
             useNativeDriver: false
         }).start()
-        setLastComponentMeasure(measure || measureLayout)
+        setLastComponentMeasure(measure)
     };
 
 
@@ -201,7 +196,6 @@ const GuidedComponent = ({
 const getStyles = ({
     insets,
     focused,
-    isDragging,
     measure,
     dimensions,
     tooltipPosition
