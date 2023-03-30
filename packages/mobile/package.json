@@ -37,7 +37,9 @@
     "peerDependencies": {
         "@guided-tour/core": "*",
         "react": "*",
-        "react-native": "*"
+        "react-native": "*",
+        "react-native-gesture-handler": "^2.9.0",
+        "react-native-reanimated": "^3.0.2"
     },
     "react-native-builder-bob": {
         "source": "src",

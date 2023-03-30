@@ -1,5 +1,5 @@
 import { useGuided } from '@guided-tour/core';
-import React, { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Platform, Pressable, StyleSheet, View, Animated } from 'react-native';
 
 import { ScrollContext } from '../contexts';
@@ -49,14 +49,31 @@ const GuidedComponent = ({
     const [animation, setAnimation] = useState(new Animated.ValueXY({x: lastComponentMeasure?.left || 0, y: lastComponentMeasure?.top || 0}));
     const [animationTooltip, setAnimationTooltip] = useState(new Animated.ValueXY({x: lastTooltipPosition?.left || 0, y:  lastTooltipPosition?.top || 0}));
 
-    const toggleSecondBox = () => {
-        Animated.timing( animation , {
-            toValue: { x: measure?.left || 0, y: measure?.top || 0},
-            duration: scrollControl ? 30 : 50,
-            delay: 20,
-            useNativeDriver: false
-        }).start()
-        setLastComponentMeasure(measure)
+    const toggleSecondBox = (left?: number, top?: number) => {
+        (top || left) ? (
+            setMeasure({top: top || 0, left: left || 0, width: measure?.width || 0, height: measure?.height || 0}),
+            Animated.stagger( 500, [
+                Animated.timing( animation , {
+                    toValue: { x: left || 0, y: top || 0},
+                    delay: 0,
+                    useNativeDriver: false
+                }),
+                Animated.timing( animation , {
+                    toValue: { x: measure?.left || 0, y: measure?.top || 0},
+                    delay: 0,
+                    useNativeDriver: false
+                })
+            ]).start(),
+            setLastComponentMeasure({top: top || 0, left: left || 0, width: measure?.width || 0, height: measure?.height || 0})
+        ) : (
+            Animated.timing( animation , {
+                toValue: { x: measure?.left || 0, y: measure?.top || 0},
+                duration: scrollControl ? 10 : 50,
+                delay: 15,
+                useNativeDriver: false
+            }).start(),
+            setLastComponentMeasure(measure)
+        )
     };
 
 
@@ -96,6 +113,7 @@ const GuidedComponent = ({
             ref.current?.measureLayout(
                 containerRef.current,
                 (left, top, width, height) => {
+                    toggleSecondBox(left, top)
                     setMeasureLayout({left, top, width, height})
                     scrollControl?.onChangeScroll({
                         x: left, y: top
