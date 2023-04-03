@@ -1,11 +1,12 @@
 import { useGuided } from '@guided-tour/core';
 import React, { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, View, Animated } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
 
 import type { GuidedControllerProps, Measure, Dimensions } from '../@types';
+import Animated, { runOnJS, withTiming, useSharedValue, useAnimatedStyle, withDelay, withSequence, withRepeat } from 'react-native-reanimated';
 
 type GuidedComponentProps = Omit<GuidedControllerProps, 'name'> & {
     focused: boolean;
@@ -44,36 +45,35 @@ const GuidedComponent = ({
 
     const [isDragging, setIsDragging] = useState<boolean | null>(null);
     const [measure, setMeasure] = useState<Measure | null>(lastComponentMeasure || null);
-    const [measureLayout, setMeasureLayout] = useState<Measure | null>(lastComponentMeasure || null);
     const [dimensions, setDimensions] = useState<Dimensions | null>(null);
-    const [animation, setAnimation] = useState(new Animated.ValueXY({x: lastComponentMeasure?.left || 0, y: lastComponentMeasure?.top || 0}));
-    const [animationTooltip, setAnimationTooltip] = useState(new Animated.ValueXY({x: lastTooltipPosition?.left || 0, y:  lastTooltipPosition?.top || 0}));
 
-    const toggleSecondBox = (left?: number, top?: number) => {
-        (top || left) ? (
-            setMeasure({top: top || 0, left: left || 0, width: measure?.width || 0, height: measure?.height || 0}),
-            Animated.stagger( 500, [
-                Animated.timing( animation , {
-                    toValue: { x: left || 0, y: top || 0},
-                    delay: 0,
-                    useNativeDriver: false
-                }),
-                Animated.timing( animation , {
-                    toValue: { x: measure?.left || 0, y: measure?.top || 0},
-                    delay: 0,
-                    useNativeDriver: false
-                })
-            ]).start(),
-            setLastComponentMeasure({top: top || 0, left: left || 0, width: measure?.width || 0, height: measure?.height || 0})
+    const measureLeft = useSharedValue(measure?.left || 0);
+    const measureTop = useSharedValue(measure?.top || 0);
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+        left: measureLeft.value,
+        top: measureTop.value
+        };
+    });
+
+    const runAnimation = (left?: number, top?: number) => {
+        (left || top) ? (
+            measureLeft.value = withRepeat(withSequence(
+                withTiming(left || 0),
+                withDelay(5, withTiming(measure?.left || 0))
+            ), 20),
+            measureTop.value = withRepeat(withSequence(
+                withTiming(top || 0),
+                withDelay(5, withTiming(measure?.top || 0))
+            ), 20),
+            measureLeft.value = withTiming(left || measure?.left || 0),
+            measureTop.value = withTiming(top || measure?.top || 0)
         ) : (
-            Animated.timing( animation , {
-                toValue: { x: measure?.left || 0, y: measure?.top || 0},
-                duration: scrollControl ? 10 : 50,
-                delay: 15,
-                useNativeDriver: false
-            }).start(),
-            setLastComponentMeasure(measure)
+            measureLeft.value = withTiming(left || measure?.left || 0, {duration: 400}),
+            measureTop.value = withTiming(top || measure?.top || 0, {duration: 400})
         )
+        setLastComponentMeasure(measure)
     };
 
 
@@ -88,12 +88,12 @@ const GuidedComponent = ({
         }
         const { left, top } = getTooltipPostion(measure, dimensions);
         
-        Animated.timing( animationTooltip , {
+        /*Animated.timing( animationTooltip , {
             toValue: { x: left || 0, y: top || 0},
             duration: 50,
             delay: 20,
             useNativeDriver: false
-        }).start()
+        }).start()*/
         setLastTooltipPosition({ left, top })
         return { left, top };
     }, [measure, dimensions]);
@@ -112,9 +112,8 @@ const GuidedComponent = ({
         if (containerRef.current) {
             ref.current?.measureLayout(
                 containerRef.current,
-                (left, top, width, height) => {
-                    toggleSecondBox(left, top)
-                    setMeasureLayout({left, top, width, height})
+                (left, top) => {
+                    runAnimation(left, top)
                     scrollControl?.onChangeScroll({
                         x: left, y: top
                     });
@@ -125,8 +124,8 @@ const GuidedComponent = ({
     };
 
     useLayoutEffect(() => {
-        toggleSecondBox()
-    }, [!!measureLayout, tooltipPosition])
+        runAnimation()
+    }, [tooltipPosition])
 
     const loadMeasureInWindow = () => {
         ref.current?.measureInWindow((left, top, width, height) => {
@@ -137,20 +136,20 @@ const GuidedComponent = ({
                 height
             });
         });
-        toggleSecondBox();
+        runAnimation();
     };
 
     const onLayoutComponent = () => {
         if (isDragging === null && scrollControl === undefined) {
-            loadMeasureInWindow();
+            runOnJS(loadMeasureInWindow)();
             setIsDragging(false);
             return;
         }
         setIsDragging(!!scrollControl);
-        loadMeasureLayout();
+        runOnJS(loadMeasureLayout)();
         setTimeout(
             () => {
-                loadMeasureInWindow();
+                runOnJS(loadMeasureInWindow)();
                 setTimeout(() => setIsDragging(false), 400);
             },
             scrollControl !== undefined ? 1000 : 0
@@ -180,7 +179,7 @@ const GuidedComponent = ({
                             onLayout={onLayoutComponent}
                             style={[
                                 styles.componentContainer,
-                                animation.getLayout()
+                                animatedStyles
                             ]}
                         >
                             {renderComponent()}
@@ -193,7 +192,7 @@ const GuidedComponent = ({
                             onLayout={onLayoutTooltip}
                             style={[
                                 styles.tooltipContainer,
-                                animationTooltip.getLayout()
+                                //animationTooltip.getLayout()
                             ]}
                         >
                             {renderTooltip &&
