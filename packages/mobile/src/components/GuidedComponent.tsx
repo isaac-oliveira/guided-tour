@@ -1,6 +1,6 @@
 import { useGuided } from '@guided-tour/core';
-import React, { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import React, { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Modal, Platform, Pressable, StyleSheet, View, InteractionManager, Alert } from 'react-native';
 
 import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
@@ -58,23 +58,60 @@ const GuidedComponent = ({
     });
 
     const runAnimation = (left?: number, top?: number) => {
-        (left || top) ? (
-            measureLeft.value = withRepeat(withSequence(
-                withTiming(left || 0),
-                withDelay(5, withTiming(measure?.left || 0))
-            ), 20),
-            measureTop.value = withRepeat(withSequence(
-                withTiming(top || 0),
-                withDelay(5, withTiming(measure?.top || 0))
-            ), 20),
-            measureLeft.value = withTiming(left || measure?.left || 0),
-            measureTop.value = withTiming(top || measure?.top || 0)
+        (left!==undefined && top!==undefined) ? (
+            Math.round(measureLeft.value) !== (left) ? (
+                measureLeft.value = withRepeat(withSequence(
+                    withTiming(left || 0),
+                    withDelay(300, withTiming(measure?.left || 0))
+                ), -1)
+            ) : measureLeft.value = measure?.left || 0,
+            Math.round(measureTop.value) !== (top) && (
+                measureTop.value = withRepeat(withSequence(
+                    withTiming(top || 0),
+                    withDelay(300, withTiming(measure?.top || 0))
+                ), -1)
+            ),
+            measureTop.value = withTiming(measure?.top || 0)
         ) : (
-            measureLeft.value = withTiming(left || measure?.left || 0, {duration: 400}),
-            measureTop.value = withTiming(top || measure?.top || 0, {duration: 400})
-        )
+           measureTop.value = withTiming(measure?.top || 0)
+        ),
         setLastComponentMeasure(measure)
     };
+
+    // support for InteractionManager
+    const useCustomInteraction = (timeLocked = 1000) => {
+        useEffect(() => {
+            const handle = InteractionManager.createInteractionHandle();
+        
+            setTimeout(
+                () => InteractionManager.clearInteractionHandle(handle),
+                timeLocked
+            );
+        
+            return () => InteractionManager.clearInteractionHandle(handle);
+        }, []);
+    };
+
+    const Component = () => {
+        useCustomInteraction();
+      
+        // Running a method after the interaction
+        useEffect(() => {
+            InteractionManager.runAfterInteractions(() => console.log('animação finalizada'));
+        }, [])
+      
+        return (
+            <Animated.View
+                onLayout={onLayoutComponent}
+                style={[
+                    styles.componentContainer,
+                    animatedStyles
+                ]}
+            >
+                {renderComponent()}
+            </Animated.View>
+        ) 
+      };
 
 
     const { containerRef } = useContext(ScrollContext);
@@ -124,7 +161,6 @@ const GuidedComponent = ({
     };
 
     useLayoutEffect(() => {
-        runAnimation()
     }, [tooltipPosition])
 
     const loadMeasureInWindow = () => {
@@ -141,15 +177,15 @@ const GuidedComponent = ({
 
     const onLayoutComponent = () => {
         if (isDragging === null && scrollControl === undefined) {
-            runOnJS(loadMeasureInWindow)();
+            loadMeasureInWindow();
             setIsDragging(false);
             return;
         }
         setIsDragging(!!scrollControl);
-        runOnJS(loadMeasureLayout)();
+        loadMeasureLayout();
         setTimeout(
             () => {
-                runOnJS(loadMeasureInWindow)();
+                loadMeasureInWindow();
                 setTimeout(() => setIsDragging(false), 400);
             },
             scrollControl !== undefined ? 1000 : 0
@@ -175,15 +211,7 @@ const GuidedComponent = ({
                     renderWelcome({ closeWelcome, close, data: welcomeData })
                 ) : (
                     <View style={styles.container}>
-                        <Animated.View
-                            onLayout={onLayoutComponent}
-                            style={[
-                                styles.componentContainer,
-                                animatedStyles
-                            ]}
-                        >
-                            {renderComponent()}
-                        </Animated.View>
+                        <Component />
                         <Pressable
                             style={styles.pressable}
                             onPress={() => {}}
