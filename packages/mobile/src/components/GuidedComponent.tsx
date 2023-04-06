@@ -6,7 +6,7 @@ import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
 
 import type { GuidedControllerProps, Measure, Dimensions } from '../@types';
-import Animated, { runOnJS, withTiming, useSharedValue, useAnimatedStyle, withDelay, withSequence, withRepeat } from 'react-native-reanimated';
+import Animated, { runOnJS, withTiming, useSharedValue, useAnimatedStyle, withDelay, withSequence, withRepeat, Easing } from 'react-native-reanimated';
 
 type GuidedComponentProps = Omit<GuidedControllerProps, 'name'> & {
     focused: boolean;
@@ -61,25 +61,37 @@ const GuidedComponent = ({
         (left!==undefined && top!==undefined) ? (
             Math.round(measureLeft.value) !== (left) ? (
                 measureLeft.value = withRepeat(withSequence(
-                    withTiming(left || 0),
-                    withDelay(300, withTiming(measure?.left || 0))
-                ), -1)
+                    withTiming(left || 0, {
+                        easing: Easing.linear,
+                    }),
+                    withDelay(300, withTiming(measure?.left || 0, {
+                        easing: Easing.linear,
+                    }))
+                ), 1)
             ) : measureLeft.value = measure?.left || 0,
             Math.round(measureTop.value) !== (top) && (
                 measureTop.value = withRepeat(withSequence(
-                    withTiming(top || 0),
-                    withDelay(300, withTiming(measure?.top || 0))
-                ), -1)
+                    withTiming(top || 0, {
+                        easing: Easing.linear,
+                    }),
+                    withDelay(300, withTiming(measure?.top || 0, {
+                        easing: Easing.linear,
+                    }))
+                ), 1)
             ),
-            measureTop.value = withTiming(measure?.top || 0)
+            measureTop.value = withTiming(measure?.top || 0, {
+                easing: Easing.linear,
+            })
         ) : (
-           measureTop.value = withTiming(measure?.top || 0)
+            measureTop.value = withTiming(measure?.top || 0, {
+                easing: Easing.linear,
+            })
         ),
         setLastComponentMeasure(measure)
     };
 
     // support for InteractionManager
-    const useCustomInteraction = (timeLocked = 1000) => {
+    const useCustomInteraction = (timeLocked = 500) => {
         useEffect(() => {
             const handle = InteractionManager.createInteractionHandle();
         
@@ -97,7 +109,7 @@ const GuidedComponent = ({
       
         // Running a method after the interaction
         useEffect(() => {
-            InteractionManager.runAfterInteractions(() => console.log('animação finalizada'));
+            InteractionManager.runAfterInteractions(() => {});
         }, [])
       
         return (
@@ -150,7 +162,7 @@ const GuidedComponent = ({
             ref.current?.measureLayout(
                 containerRef.current,
                 (left, top) => {
-                    runAnimation(left, top)
+                    runOnJS(runAnimation)(left, top)
                     scrollControl?.onChangeScroll({
                         x: left, y: top
                     });
@@ -172,7 +184,7 @@ const GuidedComponent = ({
                 height
             });
         });
-        runAnimation();
+        runOnJS(runAnimation)();
     };
 
     const onLayoutComponent = () => {
