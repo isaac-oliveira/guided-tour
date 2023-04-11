@@ -117,13 +117,26 @@ function ScrollViewScreen() {
                                 <View ref={ref} style={styles.square} />
                             )}
                         />
-                        <View style={styles.square} />
+                        <GuidedController
+                            scrollControl={scrollControl}
+                            name="item-5"
+                            previousName="item-4"
+                            nextName="item-6"
+                            tooltipData={{
+                                title: 'Item',
+                                description: 'This is my item',
+                                anchor: 'top_left'
+                            }}
+                            renderComponent={(ref) => (
+                                <View ref={ref} style={styles.square} />
+                            )}
+                        />
                         <View style={styles.square} />
                     </View>
                     <GuidedController
                         scrollControl={scrollControl}
-                        name="item-5"
-                        previousName="item-4"
+                        name="item-6"
+                        previousName="item-5"
                         nextName={null}
                         tooltipData={{
                             title: 'Footer',

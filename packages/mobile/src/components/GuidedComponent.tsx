@@ -1,11 +1,12 @@
 import { useGuided } from '@guided-tour/core';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import React, { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Modal, Platform, Pressable, StyleSheet, View, InteractionManager, Alert } from 'react-native';
 
 import { ScrollContext } from '../contexts';
 import { TooltipPosition } from '../helpers';
 
 import type { GuidedControllerProps, Measure, Dimensions } from '../@types';
+import Animated, { runOnJS, withTiming, useSharedValue, useAnimatedStyle, withDelay, withSequence, withRepeat, Easing } from 'react-native-reanimated';
 
 type GuidedComponentProps = Omit<GuidedControllerProps, 'name'> & {
     focused: boolean;
@@ -32,19 +33,98 @@ const GuidedComponent = ({
         renderWelcome,
         close,
         welcomeData,
+        lastComponentMeasure,
+        setLastComponentMeasure,
+        lastTooltipPosition,
+        setLastTooltipPosition,
         ...rest
     } = useGuided({
         previousName,
         nextName
     });
 
-    useEffect(() => {
-        setModalVisibily(focused);
-    }, [focused]);
-
     const [isDragging, setIsDragging] = useState<boolean | null>(null);
-    const [measure, setMeasure] = useState<Measure | null>(null);
+    const [measure, setMeasure] = useState<Measure | null>(lastComponentMeasure || null);
     const [dimensions, setDimensions] = useState<Dimensions | null>(null);
+
+    const measureLeft = useSharedValue(measure?.left || 0);
+    const measureTop = useSharedValue(measure?.top || 0);
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+        left: measureLeft.value,
+        top: measureTop.value
+        };
+    });
+
+    const runAnimation = (left?: number, top?: number) => {
+        (left!==undefined && top!==undefined) ? (
+            Math.round(measureLeft.value) !== (left) ? (
+                measureLeft.value = withRepeat(withSequence(
+                    withTiming(left || 0, {
+                        easing: Easing.linear,
+                    }),
+                    withDelay(300, withTiming(measure?.left || 0, {
+                        easing: Easing.linear,
+                    }))
+                ), 1)
+            ) : measureLeft.value = measure?.left || 0,
+            Math.round(measureTop.value) !== (top) && (
+                measureTop.value = withRepeat(withSequence(
+                    withTiming(top || 0, {
+                        easing: Easing.linear,
+                    }),
+                    withDelay(300, withTiming(measure?.top || 0, {
+                        easing: Easing.linear,
+                    }))
+                ), 1)
+            ),
+            measureTop.value = withTiming(measure?.top || 0, {
+                easing: Easing.linear,
+            })
+        ) : (
+            measureTop.value = withTiming(measure?.top || 0, {
+                easing: Easing.linear,
+            })
+        ),
+        setLastComponentMeasure(measure)
+    };
+
+    // support for InteractionManager
+    const useCustomInteraction = (timeLocked = 500) => {
+        useEffect(() => {
+            const handle = InteractionManager.createInteractionHandle();
+        
+            setTimeout(
+                () => InteractionManager.clearInteractionHandle(handle),
+                timeLocked
+            );
+        
+            return () => InteractionManager.clearInteractionHandle(handle);
+        }, []);
+    };
+
+    const Component = () => {
+        useCustomInteraction();
+      
+        // Running a method after the interaction
+        useEffect(() => {
+            InteractionManager.runAfterInteractions(() => {});
+        }, [])
+      
+        return (
+            <Animated.View
+                onLayout={onLayoutComponent}
+                style={[
+                    styles.componentContainer,
+                    animatedStyles
+                ]}
+            >
+                {renderComponent()}
+            </Animated.View>
+        ) 
+      };
+
 
     const { containerRef } = useContext(ScrollContext);
 
@@ -56,6 +136,14 @@ const GuidedComponent = ({
             return { left: 0, top: 0 };
         }
         const { left, top } = getTooltipPostion(measure, dimensions);
+        
+        /*Animated.timing( animationTooltip , {
+            toValue: { x: left || 0, y: top || 0},
+            duration: 50,
+            delay: 20,
+            useNativeDriver: false
+        }).start()*/
+        setLastTooltipPosition({ left, top })
         return { left, top };
     }, [measure, dimensions]);
 
@@ -73,16 +161,19 @@ const GuidedComponent = ({
         if (containerRef.current) {
             ref.current?.measureLayout(
                 containerRef.current,
-                (x, y) => {
+                (left, top) => {
+                    runOnJS(runAnimation)(left, top)
                     scrollControl?.onChangeScroll({
-                        x,
-                        y
+                        x: left, y: top
                     });
                 },
                 () => {}
             );
         }
     };
+
+    useLayoutEffect(() => {
+    }, [tooltipPosition])
 
     const loadMeasureInWindow = () => {
         ref.current?.measureInWindow((left, top, width, height) => {
@@ -93,6 +184,7 @@ const GuidedComponent = ({
                 height
             });
         });
+        runOnJS(runAnimation)();
     };
 
     const onLayoutComponent = () => {
@@ -121,8 +213,8 @@ const GuidedComponent = ({
         <>
             {renderComponent(ref)}
             <Modal
-                visible={modalVisibily}
-                animationType="fade"
+                visible={true}
+                animationType="none"
                 statusBarTranslucent
                 onDismiss={() => setModalVisibily(false)}
                 transparent
@@ -131,19 +223,17 @@ const GuidedComponent = ({
                     renderWelcome({ closeWelcome, close, data: welcomeData })
                 ) : (
                     <View style={styles.container}>
-                        <View
-                            onLayout={onLayoutComponent}
-                            style={styles.componentContainer}
-                        >
-                            {renderComponent()}
-                        </View>
+                        <Component />
                         <Pressable
                             style={styles.pressable}
                             onPress={() => {}}
                         />
-                        <View
+                        <Animated.View
                             onLayout={onLayoutTooltip}
-                            style={styles.tooltipContainer}
+                            style={[
+                                styles.tooltipContainer,
+                                //animationTooltip.getLayout()
+                            ]}
                         >
                             {renderTooltip &&
                                 renderTooltip({
@@ -152,7 +242,7 @@ const GuidedComponent = ({
                                     close,
                                     ...rest
                                 })}
-                        </View>
+                        </Animated.View>
                     </View>
                 )}
             </Modal>
@@ -163,17 +253,14 @@ const GuidedComponent = ({
 const getStyles = ({
     insets,
     focused,
-    backgroundColor,
-    isDragging,
     measure,
     dimensions,
     tooltipPosition
 }: any) => {
-    const isVisible = focused && measure && dimensions && isDragging === false;
+    const isVisible = focused && measure && dimensions;
     return StyleSheet.create({
         container: {
-            flex: 1,
-            backgroundColor: backgroundColor || '#0201017f'
+            flex: 1
         },
         componentContainer: {
             opacity: isVisible ? 1 : 0,
@@ -200,6 +287,12 @@ const getStyles = ({
             position: 'absolute',
             height: '100%',
             width: '100%'
+        },
+        moveLeft: {
+            alignSelf: 'flex-start'
+        },
+        moveRight: {
+            alignSelf: 'flex-end'
         }
     });
 };

@@ -1,5 +1,12 @@
 import type React from 'react';
 
+export type Measure = {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+};
+
 export interface Insets {
     top: number;
     left: number;
@@ -59,6 +66,10 @@ export interface IGuidedContext {
     setCurrent: (current: string | null) => void;
     welcomeData?: WelcomeData;
     setWelcomeData: (welcomeData: WelcomeData) => void;
+    lastComponentMeasure?: Measure | null;
+    setLastComponentMeasure: (lastComponentMeasure: Measure | null) => void;
+    lastTooltipPosition?: {top: number, left: number} | null;
+    setLastTooltipPosition: (lastTooltipPosition: {top: number, left: number} | null) => void;
     close: () => void;
     setIsStartGuide: (value: boolean) => void;
     closeWelcome: () => void;
@@ -91,6 +102,10 @@ export type IGuided = {
     close: () => void;
     welcomeData?: WelcomeData;
     setWelcomeData: (welcomeData: WelcomeData) => void;
+    lastComponentMeasure?: Measure | null;
+    setLastComponentMeasure: (lastComponentMeasure: Measure | null) => void;
+    lastTooltipPosition?: {top: number, left: number} | null;
+    setLastTooltipPosition: (lastTooltipPosition: {top: number, left: number} | null) => void;
     closeWelcome: () => void;
     isStartGuide?: boolean;
     setOnClose: (callback: () => void) => void;
